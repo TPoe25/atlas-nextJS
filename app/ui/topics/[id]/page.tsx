@@ -1,57 +1,36 @@
 import { fetchTopic, fetchQuestions } from "@/lib/data";
-import { askQuestionAction, voteUpAction } from "@/lib/actions";
+import { AskQuestion } from "@/components/AskQuestion";
+import { Question } from "@/components/Question";
 
-export default async function TopicPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const topic = await fetchTopic(params.id);
-  const questions = await fetchQuestions(params.id);
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function TopicPage({ params }: Props) {
+  const { id } = await params;
+
+  const topic = await fetchTopic(id);
+  const questions = await fetchQuestions(id);
 
   if (!topic) {
-    return <p>Topic not found.</p>;
+    return <p style={{ padding: 32 }}>Topic not found.</p>;
   }
 
   return (
-    <section>
-      <h1>{topic.title}</h1>
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 20 }}>
+        {topic.title}
+      </h1>
 
-      {/* Ask question */}
-      <form
-        action={askQuestionAction}
-        style={{ display: "grid", gap: 8, maxWidth: 420 }}
-      >
-        <input type="hidden" name="topicId" value={params.id} />
-        <input
-          name="title"
-          required
-          placeholder="Ask a question..."
-        />
-        <button type="submit">Ask</button>
-      </form>
+      {/* AskQuestion expects { topic: string } */}
+      <AskQuestion topic={id} />
 
-      <hr style={{ margin: "24px 0" }} />
-
-      {/* Questions list */}
-      {questions.length === 0 && <p>No questions yet.</p>}
-
-      <ul style={{ display: "grid", gap: 12 }}>
+      <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
         {questions.map((q) => (
-          <li key={q.id}>
-            <strong>{q.title}</strong> ({q.votes})
-
-            <form
-              action={voteUpAction}
-              style={{ display: "inline", marginLeft: 8 }}
-            >
-              <input type="hidden" name="questionId" value={q.id} />
-              <input type="hidden" name="topicId" value={params.id} />
-              <button type="submit">👍</button>
-            </form>
-          </li>
+          // Question expects { id: string, text: string, votes: number }
+          <Question key={q.id} id={q.id} text={q.title} votes={q.votes} />
         ))}
-      </ul>
-    </section>
+      </div>
+    </div>
   );
 }
