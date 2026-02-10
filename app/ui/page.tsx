@@ -8,7 +8,6 @@ export default function UIHomePage() {
 
       <nav style={{ display: "grid", gap: 8, marginTop: 16 }}>
         <Link href="/ui/topics/new">Create a new topic</Link>
-        {/* Task 3: topics list will be rendered here */}
       </nav>
     </section>
   );
