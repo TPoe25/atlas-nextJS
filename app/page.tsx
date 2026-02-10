@@ -1,62 +1,70 @@
-import Link from "next/link";
+"use client";
 
-export default function HomePage() {
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+
+export default function LoginPage() {
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(formData: FormData) {
+    setError(null);
+
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "").trim();
+
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+      callbackUrl: "/ui",
+    });
+
+    if (result?.error) {
+      setError("Invalid email or password.");
+      return;
+    }
+
+    // redirect manually (since redirect:false)
+    window.location.href = result?.url ?? "/ui";
+  }
+
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#0f172a", // dark slate
-        color: "white",
-        padding: 32,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 520,
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          gap: 24,
-        }}
-      >
-        <h1 style={{ fontSize: 42, fontWeight: 800 }}>Atlas Q&A</h1>
+    <main className="min-h-screen flex items-center justify-center p-6">
+      <div className="w-full max-w-md rounded-xl border border-atlas-white-300 bg-secondary p-6">
+        <h1 className="text-2xl font-bold text-white mb-4">Log in</h1>
 
-        <p style={{ fontSize: 18, color: "#cbd5f5" }}>
-          Ask questions. Vote on answers. Learn together.
-        </p>
+        <form action={onSubmit} className="space-y-4">
+          <div className="space-y-1">
+            <label className="text-sm text-white">Email</label>
+            <input
+              name="email"
+              type="email"
+              required
+              defaultValue="user@atlasmail.com"
+              className="w-full rounded-md border border-atlas-white-300 bg-white px-3 py-2"
+            />
+          </div>
 
-        <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-          <Link
-            href="/login"
-            style={{
-              padding: "12px 24px",
-              borderRadius: 8,
-              background: "#6366f1",
-              color: "white",
-              fontWeight: 600,
-              textDecoration: "none",
-            }}
+          <div className="space-y-1">
+            <label className="text-sm text-white">Password</label>
+            <input
+              name="password"
+              type="password"
+              required
+              defaultValue="123456"
+              className="w-full rounded-md border border-atlas-white-300 bg-white px-3 py-2"
+            />
+          </div>
+
+          {error ? <p className="text-sm text-red-300">{error}</p> : null}
+
+          <button
+            type="submit"
+            className="w-full rounded-md bg-atlas-purple px-4 py-2 font-semibold text-white"
           >
-            Log In
-          </Link>
-
-          <Link
-            href="/about"
-            style={{
-              padding: "12px 24px",
-              borderRadius: 8,
-              border: "1px solid #475569",
-              color: "white",
-              fontWeight: 600,
-              textDecoration: "none",
-            }}
-          >
-            About
-          </Link>
-        </div>
+            Log in
+          </button>
+        </form>
       </div>
     </main>
   );
