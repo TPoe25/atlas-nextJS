@@ -1,6 +1,7 @@
 import { sql } from "@vercel/postgres";
 import { Question, Topic, User } from "./definitions";
 
+// AUTH
 export async function fetchUser(email: string): Promise<User | undefined> {
   try {
     const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
@@ -11,69 +12,80 @@ export async function fetchUser(email: string): Promise<User | undefined> {
   }
 }
 
-export async function fetchTopics() {
+// TOPICS
+export async function fetchTopics(): Promise<Topic[]> {
   try {
-    const data = await sql<Topic>`SELECT * FROM topics`;
+    const data = await sql<Topic>`SELECT * FROM topics ORDER BY title ASC`;
     return data.rows;
   } catch (error) {
-    console.error("Database Error:", error);
+    console.error("Database Error (fetchTopics):", error);
     throw new Error("Failed to fetch topics.");
   }
 }
 
-export async function fetchTopic(id: string) {
+export async function fetchTopic(id: string): Promise<Topic | null> {
   try {
-    const data = await sql<Topic>`SELECT * FROM topics WHERE id = ${id}`;
-    return data.rows && data.rows.length > 0 ? data.rows[0] : null;
+    const data = await sql<Topic>`SELECT * FROM topics WHERE id=${id}`;
+    return data.rows.length > 0 ? data.rows[0] : null;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch topics.");
+    console.error("Database Error (fetchTopic):", error);
+    throw new Error("Failed to fetch topic.");
   }
 }
 
-export async function fetchQuestions(id: string) {
+// QUESTIONS
+export async function fetchQuestions(topicId: string): Promise<Question[]> {
   try {
-    const data =
-      await sql<Question>`SELECT * FROM questions WHERE topic_id = ${id} ORDER BY votes DESC`;
+    const data = await sql<Question>`
+      SELECT * FROM questions
+      WHERE topic_id=${topicId}
+      ORDER BY votes DESC
+    `;
     return data.rows;
   } catch (error) {
-    console.error("Database Error:", error);
+    console.error("Database Error (fetchQuestions):", error);
     throw new Error("Failed to fetch questions.");
+  }
+}
+
+// WRITES
+export async function insertTopic(topic: Pick<Topic, "title">): Promise<{ id: string }> {
+  try {
+    const data = await sql<{ id: string }>`
+      INSERT INTO topics (title)
+      VALUES (${topic.title})
+      RETURNING id;
+    `;
+    return data.rows[0];
+  } catch (error) {
+    console.error("Database Error (insertTopic):", error);
+    throw new Error("Failed to add topic.");
   }
 }
 
 export async function insertQuestion(
   question: Pick<Question, "title" | "topic_id" | "votes">
-) {
+): Promise<void> {
   try {
-    const data =
-      await sql<Question>`INSERT INTO questions (title, topic_id, votes) VALUES (${question.title}, ${question.topic_id}, ${question.votes})`;
-    return data.rows;
+    await sql`
+      INSERT INTO questions (title, topic_id, votes)
+      VALUES (${question.title}, ${question.topic_id}, ${question.votes});
+    `;
   } catch (error) {
-    console.error("Database Error:", error);
+    console.error("Database Error (insertQuestion):", error);
     throw new Error("Failed to add question.");
   }
 }
 
-export async function insertTopic(topic: Pick<Topic, "title">) {
+export async function incrementVotes(questionId: string): Promise<void> {
   try {
-    const data =
-      await sql<Topic>`INSERT INTO topics (title) VALUES (${topic.title}) RETURNING id;`;
-    console.log(data.rows[0]);
-    return data.rows[0];
+    await sql`
+      UPDATE questions
+      SET votes = votes + 1
+      WHERE id = ${questionId};
+    `;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to add topic.");
-  }
-}
-
-export async function incrementVotes(id: string) {
-  try {
-    const data =
-      await sql<Question>`UPDATE questions SET votes = votes + 1 WHERE id = ${id}`;
-    return data.rows;
-  } catch (error) {
-    console.error("Database Error:", error);
+    console.error("Database Error (incrementVotes):", error);
     throw new Error("Failed to increment votes.");
   }
 }

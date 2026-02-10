@@ -6,9 +6,9 @@ export default async function TopicLinks() {
 
   return (
     <>
-      {topics.map((topic) => {
-        return <TopicLink key={topic.id} id={topic.id} title={topic.title} />;
-      })}
+      {topics.map((topic) => (
+        <TopicLink key={topic.id} id={topic.id} title={topic.title} />
+      ))}
     </>
   );
 }
