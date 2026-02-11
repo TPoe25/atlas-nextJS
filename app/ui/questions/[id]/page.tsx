@@ -8,7 +8,7 @@ type Props = {
 export default async function QuestionPage({ params }: Props) {
   const { id } = await params;
 
-  const questionText = `Question ${id}`; // placeholder for Task 1
+  const questionText = `Question ${id}`;
 
   return (
     <section className="p-8">
