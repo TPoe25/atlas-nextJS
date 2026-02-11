@@ -1,26 +1,15 @@
-import AnswerForm from "@/components/AnswerForm";
-import AnswersList from "@/components/AnswersList";
+// app/page.tsx
+import Link from "next/link";
 
-type Props = {
-  params: Promise<{ id: string }>;
-};
-
-export default async function QuestionPage({ params }: Props) {
-  const { id } = await params;
-
-  const questionText = `Question ${id}`; // placeholder for Task 1
-
+export default function HomePage() {
   return (
-    <section className="p-8">
-      <h1 className="mb-6 text-2xl font-extrabold text-white">
-        {questionText}
-      </h1>
-
-      <AnswerForm questionId={id} />
-
-      <div className="mt-8">
-        <AnswersList questionId={id} />
+    <main className="p-8">
+      <h1 className="text-3xl font-extrabold">Home</h1>
+      <div className="mt-6 flex gap-4">
+        <Link className="underline" href="/about">About</Link>
+        <Link className="underline" href="/login">Log in</Link>
+        <Link className="underline" href="/ui">Go to UI</Link>
       </div>
-    </section>
+    </main>
   );
 }

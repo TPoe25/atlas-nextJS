@@ -1,7 +1,15 @@
 import "./global.css";
-import type { ReactNode } from "react";
+import type { Metadata } from "next";
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export const metadata: Metadata = {
+  title: "Atlas NextJS",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>{children}</body>

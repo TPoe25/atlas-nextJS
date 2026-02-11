@@ -7,34 +7,28 @@ export default function AnswerForm({ questionId }: { questionId: string }) {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!text.trim()) return;
 
-    // UI-only for Task 1 — no DB call yet
-    alert(`(UI only) Submit answer for question ${questionId}:\n\n${text}`);
-
+    alert(`Submit answer for ${questionId}:\n\n${text}`);
     setText("");
   }
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3">
-      <label className="text-sm font-semibold text-white">
-        Submit an answer
-      </label>
-
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Type your answer..."
-        required
-        rows={3}
-        className="w-full rounded-md border border-atlas-white-300 bg-white p-3 text-black"
+        className="min-h-22.5 w-full rounded-md border border-atlas-white-300 p-3 outline-none focus:ring-2 focus:ring-atlas-teal"
       />
-
-      <button
-        type="submit"
-        className="w-fit rounded-md bg-atlas-purple px-4 py-2 font-semibold text-white hover:opacity-90"
-      >
-        Submit
-      </button>
+      <div>
+        <button
+          type="submit"
+          className="rounded-md bg-atlas-navy px-5 py-2 font-semibold text-white hover:opacity-90"
+        >
+          Answer
+        </button>
+      </div>
     </form>
   );
 }

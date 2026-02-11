@@ -1,4 +1,4 @@
-import AnswerItem from "@/components/AnswerItem.tsx";
+import AnswerItem from "./AnswerItem";
 
 type Answer = {
   id: string;
@@ -26,29 +26,23 @@ function getPlaceholderAnswers(questionId: string): Answer[] {
   ];
 }
 
-export default async function AnswersList({
-  questionId,
-}: {
-  questionId: string;
-}) {
+export default function AnswersList({ questionId }: { questionId: string }) {
   const answers = getPlaceholderAnswers(questionId);
+
   const sorted = [...answers].sort(
     (a, b) => Number(b.isAccepted) - Number(a.isAccepted),
   );
 
   return (
-    <div>
-      <h2 className="mb-3 text-lg font-bold text-white">Answers</h2>
-      <div className="overflow-hidden rounded-md border border-atlas-white-300">
-        {sorted.map((a) => (
-          <AnswerItem
-            key={a.id}
-            id={a.id}
-            text={a.text}
-            isAccepted={a.isAccepted}
-          />
-        ))}
-      </div>
+    <div className="overflow-hidden rounded-lg border border-atlas-white-300">
+      {sorted.map((a) => (
+        <AnswerItem
+          key={a.id}
+          id={a.id}
+          text={a.text}
+          isAccepted={a.isAccepted}
+        />
+      ))}
     </div>
   );
 }

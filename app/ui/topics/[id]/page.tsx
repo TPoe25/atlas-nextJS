@@ -1,36 +1,26 @@
-import { fetchTopic, fetchQuestions } from "@/lib/data";
-import { AskQuestion } from "@/components/AskQuestion";
-import { Question } from "@/components/Question";
+import AnswerForm from "@/components/AnswerForm";
+import AnswerItem from "@/components/AnswersList";
 
 type Props = {
   params: Promise<{ id: string }>;
 };
 
-export default async function TopicPage({ params }: Props) {
+export default async function QuestionPage({ params }: Props) {
   const { id } = await params;
 
-  const topic = await fetchTopic(id);
-  const questions = await fetchQuestions(id);
-
-  if (!topic) {
-    return <p style={{ padding: 32 }}>Topic not found.</p>;
-  }
+  const questionText = "What is null safety in TypeScript?";
 
   return (
-    <div style={{ padding: 32 }}>
-      <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 20 }}>
-        {topic.title}
+    <section>
+      <h1 className="mb-6 text-4xl font-extrabold text-black">
+        {questionText}
       </h1>
 
-      {/* AskQuestion expects { topic: string } */}
-      <AskQuestion topic={id} />
+      <AnswerForm questionId={id} />
 
-      <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
-        {questions.map((q) => (
-          // Question expects { id: string, text: string, votes: number }
-          <Question key={q.id} id={q.id} text={q.title} votes={q.votes} />
-        ))}
+      <div className="mt-8">
+        <AnswerItem questionId={id} />
       </div>
-    </div>
+    </section>
   );
 }

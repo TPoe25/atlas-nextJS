@@ -1,5 +1,5 @@
 import AnswerForm from "@/components/AnswerForm";
-import AnswersList from "@/components/AnswersList";
+import ItemsList from "@/components/AnswersList";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -8,18 +8,19 @@ type Props = {
 export default async function QuestionPage({ params }: Props) {
   const { id } = await params;
 
-  const questionText = `Question ${id}`;
+  // Task 1 (UI-only): placeholder question text
+  const questionText = "What is null safety in TypeScript?";
 
   return (
-    <section className="p-8">
-      <h1 className="mb-6 text-2xl font-extrabold text-white">
+    <section className="w-full">
+      <h1 className="mb-6 text-4xl font-extrabold text-black">
         {questionText}
       </h1>
 
       <AnswerForm questionId={id} />
 
       <div className="mt-8">
-        <AnswersList questionId={id} />
+        <ItemsList questionId={id} />
       </div>
     </section>
   );
