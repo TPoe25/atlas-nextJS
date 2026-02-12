@@ -1,25 +1,43 @@
-"use client";
+import { fetchQuestion, fetchAnswers } from "@/lib/data";
+import AnswerForm from "@/components/AnswerForm";
+import AnswerItem from "@/components/AnswerItem";
 
-import { addAnswerAction } from "@/lib/actions";
+type Props = {
+  params: { id: string };
+};
 
-export default function AnswerForm({ questionId }: { questionId: string }) {
+export default async function QuestionPage({ params }: Props) {
+  const { id } = params;
+
+  const question = await fetchQuestion(id);
+  if (!question) return <p className="p-8">Question not found.</p>;
+
+  const answers = await fetchAnswers(id);
+
+  const sortedAnswers = [...answers].sort((a, b) => {
+    if (a.is_accepted && !b.is_accepted) return -1;
+    if (!a.is_accepted && b.is_accepted) return 1;
+    return 0;
+  });
+
   return (
-    <form action={addAnswerAction} className="flex flex-col gap-3">
-      <input type="hidden" name="questionId" value={questionId} />
+    <section className="p-8">
+      <h1 className="mb-6 text-4xl font-extrabold text-white">
+        {question.title}
+      </h1>
 
-      <textarea
-        name="text"
-        required
-        placeholder="Type your answer..."
-        className="h-28 w-full resize-none rounded-md border-2 border-blue-600 bg-white p-4 text-base outline-none"
-      />
+      <AnswerForm questionId={id} />
 
-      <button
-        type="submit"
-        className="w-fit rounded-md bg-blue-600 px-4 py-2 text-white"
-      >
-        Submit
-      </button>
-    </form>
+      <div className="mt-8 overflow-hidden rounded-md border border-atlas-white-300">
+        {sortedAnswers.map((a) => (
+          <AnswerItem
+            key={a.id}
+            id={a.id}
+            text={a.text}
+            isAccepted={a.is_accepted}
+          />
+        ))}
+      </div>
+    </section>
   );
 }

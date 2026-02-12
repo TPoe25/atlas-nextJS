@@ -1,43 +1,25 @@
 import { fetchQuestion, fetchAnswers } from "@/lib/data";
 import AnswerForm from "@/components/AnswerForm";
-import AnswerItem from "@/components/AnswerItem";
+import AnswersList from "@/components/AnswersList";
 
-type Props = {
-  params: { id: string };
-};
+type Props = { params: { id: string } };
 
 export default async function QuestionPage({ params }: Props) {
-  const { id } = params;
+  const question = await fetchQuestion(params.id);
+  if (!question) return <p className="p-8">Question not found.</p>;
 
-  const question = await fetchQuestion(id);
-
-  if (!question) {
-    return <p className="p-8">Question not found.</p>;
-  }
-
-  const answers = await fetchAnswers(id);
-
-  const sortedAnswers = [...answers].sort((a) =>
-    a.is_accepted ? -1 : 1
-  );
+  const answers = await fetchAnswers(params.id);
 
   return (
     <section className="p-8">
-      <h1 className="mb-6 text-4xl font-extrabold">
+      <h1 className="mb-6 text-2xl font-extrabold text-white">
         {question.title}
       </h1>
 
-      <AnswerForm questionId={id} />
+      <AnswerForm questionId={params.id} />
 
-      <div className="mt-8 overflow-hidden rounded-md border border-gray-200">
-        {sortedAnswers.map((a) => (
-          <AnswerItem
-            key={a.id}
-            id={a.id}
-            text={a.text}
-            isAccepted={a.is_accepted}
-          />
-        ))}
+      <div className="mt-8">
+        <AnswersList answers={answers} acceptedAnswerId={question.answer_id} />
       </div>
     </section>
   );
