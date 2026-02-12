@@ -1,30 +1,30 @@
-import AnswerItem from "./AnswerItem";
-import { fetchAnswers, fetchQuestion } from "@/lib/data";
+import { fetchAnswers } from "@/lib/data";
+import AnswerItem from "@/components/AnswerItem";
 
 export default async function AnswersList({
   questionId,
+  acceptedAnswerId,
 }: {
   questionId: string;
+  acceptedAnswerId: string | null;
 }) {
   const answers = await fetchAnswers(questionId);
-  const question = await fetchQuestion(questionId);
 
-  const acceptedId = question?.answer_id ?? null;
-
-  const sorted = [...answers].sort((a) => {
-    if (a.id === acceptedId) return -1;
+  const sorted = [...answers].sort((a, b) => {
+    if (acceptedAnswerId && a.id === acceptedAnswerId) return -1;
+    if (acceptedAnswerId && b.id === acceptedAnswerId) return 1;
     return 0;
   });
 
   return (
-    <div className="rounded-md border">
+    <div className="overflow-hidden rounded-md border border-atlas-white-300">
       {sorted.map((a) => (
         <AnswerItem
           key={a.id}
           id={a.id}
           text={a.text}
           questionId={questionId}
-          isAccepted={a.id === acceptedId}
+          isAccepted={acceptedAnswerId === a.id}
         />
       ))}
     </div>

@@ -12,9 +12,7 @@ export default async function TopicPage({ params }: Props) {
   const topic = await fetchTopic(topicId);
   const questions = await fetchQuestions(topicId);
 
-  if (!topic) {
-    return <p className="p-8">Topic not found.</p>;
-  }
+  if (!topic) return <p className="p-8">Topic not found.</p>;
 
   return (
     <section className="p-8">
