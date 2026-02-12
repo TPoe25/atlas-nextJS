@@ -4,68 +4,63 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("user@atlasmail.com");
+  const [password, setPassword] = useState("123456");
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit(formData: FormData) {
+  async function onCredentialsLogin(e: React.FormEvent) {
+    e.preventDefault();
     setError(null);
 
-    const email = String(formData.get("email") ?? "").trim();
-    const password = String(formData.get("password") ?? "").trim();
-
-    const result = await signIn("credentials", {
+    const res = await signIn("credentials", {
       email,
       password,
-      redirect: false,
+      redirect: true,
       callbackUrl: "/ui",
     });
 
-    if (result?.error) {
-      setError("Invalid email or password.");
-      return;
-    }
-
-    // redirect manually (since redirect:false)
-    window.location.href = result?.url ?? "/ui";
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-xl border border-atlas-white-300 bg-secondary p-6">
-        <h1 className="text-2xl font-bold text-white mb-4">Log in</h1>
+    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 p-8">
+      <h1 className="text-3xl font-extrabold">Login</h1>
 
-        <form action={onSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-sm text-white">Email</label>
-            <input
-              name="email"
-              type="email"
-              required
-              defaultValue="user@atlasmail.com"
-              className="w-full rounded-md border border-atlas-white-300 bg-white px-3 py-2"
-            />
-          </div>
+      <form onSubmit={onCredentialsLogin} className="flex flex-col gap-3">
+        <label className="text-sm font-semibold">Email</label>
+        <input
+          className="rounded-md border p-3"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+        />
 
-          <div className="space-y-1">
-            <label className="text-sm text-white">Password</label>
-            <input
-              name="password"
-              type="password"
-              required
-              defaultValue="123456"
-              className="w-full rounded-md border border-atlas-white-300 bg-white px-3 py-2"
-            />
-          </div>
+        <label className="text-sm font-semibold">Password</label>
+        <input
+          className="rounded-md border p-3"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+        />
 
-          {error ? <p className="text-sm text-red-300">{error}</p> : null}
+        {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-          <button
-            type="submit"
-            className="w-full rounded-md bg-atlas-purple px-4 py-2 font-semibold text-white"
-          >
-            Log in
-          </button>
-        </form>
-      </div>
+        <button className="mt-2 rounded-md bg-black px-4 py-3 text-white">
+          Sign in
+        </button>
+
+        <p className="text-sm text-gray-600">
+          Test login: <b>user@atlasmail.com</b> / <b>123456</b>
+        </p>
+      </form>
+
+      <div className="my-2 h-px bg-gray-200" />
+
+      <button
+        onClick={() => signIn("github", { callbackUrl: "/ui" })}
+        className="rounded-md border px-4 py-3"
+      >
+        Sign in with GitHub
+      </button>
     </main>
   );
 }

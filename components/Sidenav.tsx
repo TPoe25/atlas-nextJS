@@ -5,15 +5,21 @@ import TopicLinks from "./TopicLinks";
 import NavLink from "./NavLink";
 import SignOutButton from "./SignOutButton";
 import NewTopicButton from "./NewTopicButton";
+import LoggedInUser from "./LoggedInUser";
 
 export default async function SideNav() {
   return (
     <div className="flex h-full flex-col px-3 py-4 md:px-2">
       <Logo />
-      <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2 overflow-scroll">
+
+      <div className="px-2">
+        <LoggedInUser />
+      </div>
+
+      <div className="mt-2 flex grow flex-row justify-between space-x-2 overflow-auto md:flex-col md:space-x-0 md:space-y-2">
         <NavLink name="Topics" href="/ui" />
         <TopicLinks />
-        <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
+        <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block" />
         <NewTopicButton />
         <SignOutButton />
       </div>
@@ -30,7 +36,7 @@ function Logo() {
       <Image
         src={logo}
         alt="Acme Logo"
-        className="h-14 md:h-full object-contain"
+        className="h-14 object-contain md:h-full"
       />
     </Link>
   );
