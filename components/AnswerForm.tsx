@@ -7,28 +7,25 @@ export default function AnswerForm({ questionId }: { questionId: string }) {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!text.trim()) return;
-
-    alert(`Submit answer for ${questionId}:\n\n${text}`);
+    alert(`Submit answer for question ${questionId}:\n\n${text}`);
     setText("");
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-3">
-      <textarea
+    <form onSubmit={onSubmit} className="flex items-center gap-4">
+      <input
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Type your answer..."
-        className="min-h-22.5 w-full rounded-md border border-atlas-white-300 p-3 outline-none focus:ring-2 focus:ring-atlas-teal"
+        placeholder="Answer question"
+        className="h-14 flex-1 rounded-xl border border-[#E5E7EB] bg-white px-6 text-lg outline-none focus:border-[#0B1B66]"
       />
-      <div>
-        <button
-          type="submit"
-          className="rounded-md bg-atlas-navy px-5 py-2 font-semibold text-white hover:opacity-90"
-        >
-          Answer
-        </button>
-      </div>
+
+      <button
+        type="submit"
+        className="h-14 rounded-xl bg-[#0B1B66] px-10 text-lg font-semibold text-white hover:opacity-90"
+      >
+        Answer
+      </button>
     </form>
   );
 }

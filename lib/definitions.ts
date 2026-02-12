@@ -17,6 +17,7 @@ export type Answer = {
   id: string;
   text: string;
   question_id: string;
+  is_accepted: boolean;
 };
 
 export type Question = {

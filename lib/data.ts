@@ -1,5 +1,5 @@
 import { sql } from "@vercel/postgres";
-import { Question, Topic, User } from "./definitions";
+import { Question, Topic, User, Answer } from "./definitions";
 
 /* ===========================
    USERS
@@ -21,7 +21,10 @@ export async function fetchUser(email: string): Promise<User | undefined> {
 
 export async function fetchTopics(): Promise<Topic[]> {
   try {
-    const data = await sql<Topic>`SELECT * FROM topics ORDER BY title`;
+    const data = await sql<Topic>`
+      SELECT * FROM topics
+      ORDER BY title
+    `;
     return data.rows;
   } catch (error) {
     console.error("Database Error (fetchTopics):", error);
@@ -33,7 +36,9 @@ export async function fetchTopic(id: string): Promise<Topic | null> {
   if (!id || id === "undefined") return null;
 
   try {
-    const data = await sql<Topic>`SELECT * FROM topics WHERE id=${id}`;
+    const data = await sql<Topic>`
+      SELECT * FROM topics WHERE id=${id}
+    `;
     return data.rows.length > 0 ? data.rows[0] : null;
   } catch (error) {
     console.error("Database Error (fetchTopic):", error);
@@ -42,14 +47,14 @@ export async function fetchTopic(id: string): Promise<Topic | null> {
 }
 
 export async function insertTopic(
-  topic: Pick<Topic, "title">,
+  topic: Pick<Topic, "title">
 ): Promise<{ id: string }> {
   try {
-    const data = await sql<Topic>`
-        INSERT INTO topics (title)
-        VALUES (${topic.title})
-        RETURNING id
-      `;
+    const data = await sql`
+      INSERT INTO topics (title)
+      VALUES (${topic.title})
+      RETURNING id
+    `;
     return data.rows[0];
   } catch (error) {
     console.error("Database Error (insertTopic):", error);
@@ -66,10 +71,10 @@ export async function fetchQuestions(topicId: string): Promise<Question[]> {
 
   try {
     const data = await sql<Question>`
-        SELECT * FROM questions
-        WHERE topic_id=${topicId}
-        ORDER BY votes DESC
-      `;
+      SELECT * FROM questions
+      WHERE topic_id=${topicId}
+      ORDER BY votes DESC
+    `;
     return data.rows;
   } catch (error) {
     console.error("Database Error (fetchQuestions):", error);
@@ -77,14 +82,16 @@ export async function fetchQuestions(topicId: string): Promise<Question[]> {
   }
 }
 
-export async function fetchQuestion(id: string): Promise<Question | null> {
+export async function fetchQuestion(
+  id: string
+): Promise<Question | null> {
   if (!id || id === "undefined") return null;
 
   try {
     const data = await sql<Question>`
-        SELECT * FROM questions
-        WHERE id=${id}
-      `;
+      SELECT * FROM questions
+      WHERE id=${id}
+    `;
     return data.rows.length > 0 ? data.rows[0] : null;
   } catch (error) {
     console.error("Database Error (fetchQuestion):", error);
@@ -93,7 +100,7 @@ export async function fetchQuestion(id: string): Promise<Question | null> {
 }
 
 export async function insertQuestion(
-  question: Pick<Question, "title" | "topic_id">,
+  question: Pick<Question, "title" | "topic_id">
 ) {
   try {
     await sql`
@@ -120,24 +127,19 @@ export async function incrementVotes(id: string) {
 }
 
 /* ===========================
-   ANSWERS (Part 2)
+   ANSWERS
 =========================== */
 
-export type Answer = {
-  id: string;
-  text: string;
-  question_id: string;
-  is_accepted: boolean;
-};
-
-export async function fetchAnswers(questionId: string): Promise<Answer[]> {
+export async function fetchAnswers(
+  questionId: string
+): Promise<Answer[]> {
   if (!questionId || questionId === "undefined") return [];
 
   try {
     const data = await sql<Answer>`
-        SELECT * FROM answers
-        WHERE question_id=${questionId}
-      `;
+      SELECT * FROM answers
+      WHERE question_id=${questionId}
+    `;
     return data.rows;
   } catch (error) {
     console.error("Database Error (fetchAnswers):", error);

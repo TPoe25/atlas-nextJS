@@ -1,26 +1,43 @@
+import { fetchQuestion, fetchAnswers } from "@/lib/data";
 import AnswerForm from "@/components/AnswerForm";
-import ItemsList from "@/components/AnswersList";
+import AnswerItem from "@/components/AnswerItem";
 
 type Props = {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 };
 
 export default async function QuestionPage({ params }: Props) {
-  const { id } = await params;
+  const { id } = params;
 
-  // Task 1 (UI-only): placeholder question text
-  const questionText = "What is null safety in TypeScript?";
+  const question = await fetchQuestion(id);
+
+  if (!question) {
+    return <p className="p-8">Question not found.</p>;
+  }
+
+  const answers = await fetchAnswers(id);
+
+  const sortedAnswers = [...answers].sort((a) =>
+    a.is_accepted ? -1 : 1
+  );
 
   return (
-    <section className="w-full">
-      <h1 className="mb-6 text-4xl font-extrabold text-black">
-        {questionText}
+    <section className="p-8">
+      <h1 className="mb-6 text-4xl font-extrabold">
+        {question.title}
       </h1>
 
       <AnswerForm questionId={id} />
 
-      <div className="mt-8">
-        <ItemsList questionId={id} />
+      <div className="mt-8 overflow-hidden rounded-md border border-gray-200">
+        {sortedAnswers.map((a) => (
+          <AnswerItem
+            key={a.id}
+            id={a.id}
+            text={a.text}
+            isAccepted={a.is_accepted}
+          />
+        ))}
       </div>
     </section>
   );
