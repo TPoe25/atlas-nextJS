@@ -1,39 +1,31 @@
-import AnswerForm from "@/components/AnswerForm";
-import AnswerItem from "@/components/AnswersList";
-
-import Link from "next/link";
-
-{questions.map((q) => (
-  <Link
-    key={q.id}
-    href={`/ui/questions/${q.id}`}
-    className="block"
-  >
-    {/* whatever your Question component is */}
-    <Question id={q.id} text={q.title} votes={q.votes} />
-  </Link>
-))}
-
+import { fetchTopic, fetchQuestions } from "@/lib/data";
+import { AskQuestion } from "@/components/AskQuestion";
+import { Question } from "@/components/Question";
 
 type Props = {
   params: Promise<{ id: string }>;
 };
 
-export default async function QuestionPage({ params }: Props) {
-  const { id } = await params;
+export default async function TopicPage({ params }: Props) {
+  const { id: topicId } = await params;
 
-  const questionText = "What is null safety in TypeScript?";
+  const topic = await fetchTopic(topicId);
+  const questions = await fetchQuestions(topicId);
+
+  if (!topic) {
+    return <p className="p-8">Topic not found.</p>;
+  }
 
   return (
-    <section>
-      <h1 className="mb-6 text-4xl font-extrabold text-black">
-        {questionText}
-      </h1>
+    <section className="p-8">
+      <h1 className="mb-6 text-4xl font-extrabold">{topic.title}</h1>
 
-      <AnswerForm questionId={id} />
+      <AskQuestion topicId={topicId} />
 
-      <div className="mt-8">
-        <AnswerItem questionId={id} />
+      <div className="mt-8 overflow-hidden rounded-md border border-atlas-white-300">
+        {questions.map((q) => (
+          <Question key={q.id} id={q.id} text={q.title} votes={q.votes} />
+        ))}
       </div>
     </section>
   );
