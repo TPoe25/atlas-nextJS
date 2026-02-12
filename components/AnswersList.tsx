@@ -1,43 +1,36 @@
-"use client";
-
-import { markAnswerAction } from "@/lib/actions";
+import AnswerItem from "@/components/AnswerItem";
+import { fetchAnswers } from "@/lib/data";
 
 type Props = {
-  id: string;
-  text: string;
   questionId: string;
-  isAccepted: boolean;
+  acceptedAnswerId: string | null;
 };
 
-export default function AnswerItem({
-  id,
-  text,
+export default async function AnswersList({
   questionId,
-  isAccepted,
+  acceptedAnswerId,
 }: Props) {
+  const answers = await fetchAnswers(questionId);
+
+  const sorted = [...answers].sort((a, b) => {
+    const aAccepted = acceptedAnswerId === a.id;
+    const bAccepted = acceptedAnswerId === b.id;
+    if (aAccepted && !bAccepted) return -1;
+    if (!aAccepted && bAccepted) return 1;
+    return 0;
+  });
+
   return (
-    <div className="flex items-center border-l border-r border-t border-atlas-white-300 p-6 first:rounded-t-md last:rounded-b-md last:border-b">
-      <div className="flex w-full items-center justify-between gap-4">
-        <p className="w-full text-left font-semibold text-gray-900">{text}</p>
-
-        <form action={markAnswerAction}>
-          <input type="hidden" name="questionId" value={questionId} />
-          <input type="hidden" name="answerId" value={id} />
-
-          <button
-            type="submit"
-            aria-label="Mark as accepted answer"
-            className={[
-              "flex h-10 w-10 items-center justify-center rounded-md border",
-              isAccepted
-                ? "border-green-600 bg-green-600 text-white"
-                : "border-atlas-white-300 bg-white text-gray-900 hover:opacity-90",
-            ].join(" ")}
-          >
-            ✓
-          </button>
-        </form>
-      </div>
+    <div className="overflow-hidden rounded-md border border-atlas-white-300">
+      {sorted.map((a) => (
+        <AnswerItem
+          key={a.id}
+          id={a.id}
+          text={a.text}
+          questionId={questionId}
+          isAccepted={acceptedAnswerId === a.id}
+        />
+      ))}
     </div>
   );
 }

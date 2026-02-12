@@ -1,4 +1,4 @@
-import { fetchQuestion, fetchAnswers } from "@/lib/data";
+import { fetchQuestion } from "@/lib/data";
 import AnswerForm from "@/components/AnswerForm";
 import AnswersList from "@/components/AnswersList";
 
@@ -10,9 +10,9 @@ export default async function QuestionPage({ params }: Props) {
   const { id } = await params;
 
   const question = await fetchQuestion(id);
-  if (!question) return <p className="p-8">Question not found.</p>;
-
-  const answers = await fetchAnswers(id);
+  if (!question) {
+    return <p className="p-8">Question not found.</p>;
+  }
 
   return (
     <section className="p-8">
@@ -21,7 +21,10 @@ export default async function QuestionPage({ params }: Props) {
       <AnswerForm questionId={id} />
 
       <div className="mt-8">
-        <AnswersList questionId={id} acceptedAnswerId={question.answer_id ?? null} />
+        <AnswersList
+          questionId={id}
+          acceptedAnswerId={question.answer_id ?? null}
+        />
       </div>
     </section>
   );
