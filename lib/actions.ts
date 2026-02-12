@@ -2,16 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import {
-  insertAnswer,
-  markAnswerAsAccepted,
   insertTopic,
   insertQuestion,
   incrementVotes,
-} from "./data";
-
-/* ===========================
-   TOPICS
-=========================== */
+  insertAnswer,
+  markAnswerAsAccepted,
+} from "@/lib/data";
 
 export async function createTopicAction(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
@@ -20,10 +16,6 @@ export async function createTopicAction(formData: FormData) {
   await insertTopic({ title });
   revalidatePath("/ui");
 }
-
-/* ===========================
-   QUESTIONS
-=========================== */
 
 export async function askQuestionAction(formData: FormData) {
   const topicId = String(formData.get("topicId") ?? "").trim();
@@ -37,6 +29,7 @@ export async function askQuestionAction(formData: FormData) {
 export async function voteUpAction(formData: FormData) {
   const questionId = String(formData.get("questionId") ?? "").trim();
   const topicId = String(formData.get("topicId") ?? "").trim();
+
   if (!questionId) return;
 
   await incrementVotes(questionId);
@@ -45,24 +38,18 @@ export async function voteUpAction(formData: FormData) {
   else revalidatePath("/ui");
 }
 
-/* ===========================
-   ANSWERS
-=========================== */
-
 export async function addAnswerAction(formData: FormData) {
-  const text = formData.get("text") as string;
-  const questionId = formData.get("questionId") as string;
-
+  const text = String(formData.get("text") ?? "").trim();
+  const questionId = String(formData.get("questionId") ?? "").trim();
   if (!text || !questionId) return;
 
   await insertAnswer(text, questionId);
   revalidatePath(`/ui/questions/${questionId}`);
 }
 
-export async function markAcceptedAction(formData: FormData) {
-  const questionId = formData.get("questionId") as string;
-  const answerId = formData.get("answerId") as string;
-
+export async function markAnswerAction(formData: FormData) {
+  const questionId = String(formData.get("questionId") ?? "").trim();
+  const answerId = String(formData.get("answerId") ?? "").trim();
   if (!questionId || !answerId) return;
 
   await markAnswerAsAccepted(questionId, answerId);

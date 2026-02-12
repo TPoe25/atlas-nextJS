@@ -1,10 +1,8 @@
+"use client";
+
 import { askQuestionAction } from "@/lib/actions";
 
-type Props = {
-  topicId: string;
-};
-
-export function AskQuestion({ topicId }: Props) {
+export function AskQuestion({ topicId }: { topicId: string }) {
   return (
     <form action={askQuestionAction} className="relative my-8">
       <input type="hidden" name="topicId" value={topicId} />
@@ -19,7 +17,7 @@ export function AskQuestion({ topicId }: Props) {
 
       <button
         type="submit"
-        className="absolute right-2 top-2 flex h-10 w-24 items-center justify-center rounded-md border bg-secondary px-4 text-lg text-white focus:bg-secondary"
+        className="absolute right-2 top-2 flex h-10 w-24 items-center justify-center rounded-md border bg-secondary px-4 text-lg text-white hover:opacity-90"
       >
         Ask
       </button>

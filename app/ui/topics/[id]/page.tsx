@@ -24,7 +24,13 @@ export default async function TopicPage({ params }: Props) {
 
       <div className="mt-8 overflow-hidden rounded-md border border-atlas-white-300">
         {questions.map((q) => (
-          <Question key={q.id} id={q.id} text={q.title} votes={q.votes} />
+          <Question
+            key={q.id}
+            id={q.id}
+            text={q.title}
+            votes={q.votes}
+            topicId={topicId}
+          />
         ))}
       </div>
     </section>

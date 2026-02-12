@@ -1,43 +1,25 @@
-import { fetchQuestion, fetchAnswers } from "@/lib/data";
-import AnswerForm from "@/components/AnswerForm";
-import AnswerItem from "@/components/AnswerItem";
+"use client";
 
-type Props = {
-  params: { id: string };
-};
+import { addAnswerAction } from "@/lib/actions";
 
-export default async function QuestionPage({ params }: Props) {
-  const { id } = params;
-
-  const question = await fetchQuestion(id);
-  if (!question) return <p className="p-8">Question not found.</p>;
-
-  const answers = await fetchAnswers(id);
-
-  const sortedAnswers = [...answers].sort((a, b) => {
-    if (a.is_accepted && !b.is_accepted) return -1;
-    if (!a.is_accepted && b.is_accepted) return 1;
-    return 0;
-  });
-
+export default function AnswerForm({ questionId }: { questionId: string }) {
   return (
-    <section className="p-8">
-      <h1 className="mb-6 text-4xl font-extrabold text-white">
-        {question.title}
-      </h1>
+    <form action={addAnswerAction} className="flex flex-col gap-3">
+      <input type="hidden" name="questionId" value={questionId} />
 
-      <AnswerForm questionId={id} />
+      <textarea
+        name="text"
+        required
+        placeholder="Type your answer..."
+        className="h-28 w-full resize-none rounded-md border-2 border-blue-600 bg-white p-4 text-base outline-none"
+      />
 
-      <div className="mt-8 overflow-hidden rounded-md border border-atlas-white-300">
-        {sortedAnswers.map((a) => (
-          <AnswerItem
-            key={a.id}
-            id={a.id}
-            text={a.text}
-            isAccepted={a.is_accepted}
-          />
-        ))}
-      </div>
-    </section>
+      <button
+        type="submit"
+        className="w-fit rounded-md bg-blue-600 px-4 py-2 text-white hover:opacity-90"
+      >
+        Submit
+      </button>
+    </form>
   );
 }

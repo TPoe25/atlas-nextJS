@@ -1,13 +1,21 @@
-import { HandThumbUpIcon } from "@heroicons/react/24/outline";
+"use client";
 
-export default function VoteButton({ id }: { id: string }) {
+import { voteUpAction } from "@/lib/actions";
+
+export default function VoteButton({
+  id,
+  topicId,
+}: {
+  id: string;
+  topicId: string;
+}) {
   return (
-    <form>
-      <button
-        type="submit"
-        className="h-8 w-8 min-w-[2rem] rounded-full ring-gray-200 hover:text-atlas-teal active:bg-primary active:text-white active:outline-hidden active:ring-2 active:ring-primary"
-      >
-        <HandThumbUpIcon />
+    <form action={voteUpAction}>
+      <input type="hidden" name="questionId" value={id} />
+      <input type="hidden" name="topicId" value={topicId} />
+
+      <button type="submit" className="ml-2 hover:opacity-90">
+        👍
       </button>
     </form>
   );
