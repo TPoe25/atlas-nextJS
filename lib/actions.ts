@@ -7,7 +7,7 @@ import {
   insertTopic,
   insertQuestion,
   incrementVotes,
-} from "@/lib/data";
+} from "./data";
 
 /* ===========================
    TOPICS
