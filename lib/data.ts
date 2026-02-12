@@ -146,3 +146,50 @@ export async function fetchAnswers(
     throw new Error("Failed to fetch answers.");
   }
 }
+
+export async function insertAnswer(
+  text: string,
+  questionId: string
+) {
+  try {
+    await sql`
+      INSERT INTO answers (text, question_id)
+      VALUES (${text}, ${questionId})
+    `;
+  } catch (error) {
+    console.error("Database Error (insertAnswer):", error);
+    throw new Error("Failed to insert answer.");
+  }
+}
+
+
+export async function markAnswerAsAccepted(
+  questionId: string,
+  answerId: string
+) {
+  try {
+    // Reset all answers
+    await sql`
+      UPDATE answers
+      SET is_accepted = false
+      WHERE question_id = ${questionId}
+    `;
+
+    // Mark selected answer
+    await sql`
+      UPDATE answers
+      SET is_accepted = true
+      WHERE id = ${answerId}
+    `;
+
+    // Update question table
+    await sql`
+      UPDATE questions
+      SET answer_id = ${answerId}
+      WHERE id = ${questionId}
+    `;
+  } catch (error) {
+    console.error("Database Error (markAnswerAsAccepted):", error);
+    throw new Error("Failed to mark answer.");
+  }
+}

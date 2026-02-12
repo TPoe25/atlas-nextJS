@@ -1,30 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { addAnswerAction } from "@/lib/actions";
 
 export default function AnswerForm({ questionId }: { questionId: string }) {
-  const [text, setText] = useState("");
-
-  function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    alert(`Submit answer for question ${questionId}:\n\n${text}`);
-    setText("");
-  }
-
   return (
-    <form onSubmit={onSubmit} className="flex items-center gap-4">
-      <input
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Answer question"
-        className="h-14 flex-1 rounded-xl border border-[#E5E7EB] bg-white px-6 text-lg outline-none focus:border-[#0B1B66]"
+    <form action={addAnswerAction} className="flex flex-col gap-3">
+      <input type="hidden" name="questionId" value={questionId} />
+
+      <textarea
+        name="text"
+        required
+        placeholder="Type your answer..."
+        className="h-28 w-full resize-none rounded-md border-2 border-blue-600 bg-white p-4 text-base outline-none"
       />
 
       <button
         type="submit"
-        className="h-14 rounded-xl bg-[#0B1B66] px-10 text-lg font-semibold text-white hover:opacity-90"
+        className="w-fit rounded-md bg-blue-600 px-4 py-2 text-white"
       >
-        Answer
+        Submit
       </button>
     </form>
   );
